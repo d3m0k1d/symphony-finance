@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-module vtb-apihack-2025
+module github.com/d3m0k1d/symphony-finance
 
 go 1.24.3
 
@@ -32,9 +31,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-||||||| empty tree
-=======
-module github.com/d3m0k1d/symphony-finance
-
-go 1.25.3
->>>>>>> origin/master

@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"vtb-apihack-2025/client-pilot/le"
+	"vtb-apihack-2025/client-pilot/payments"
 	"vtb-apihack-2025/client-pilot/pe"
 )
 
@@ -15,24 +18,36 @@ func main() {
 		return nil
 	}
 	if err := func() error {
+		var err error
 		ctx := context.Background()
-		c, err := pe.NewClient(os.Getenv("BANK"))
+		apiurl := os.Getenv("BANK")
+		pec, err1 := pe.NewClientWithResponses(apiurl)
+		lec, err2 := le.NewClientWithResponses(apiurl)
+		pc, err3 := payments.NewClientWithResponses(apiurl)
+		err = errors.Join(err1, err2, err3)
 		if err != nil {
 			return err
 		}
+		_ = lec
 		// c.LoginAuthLoginPost(c, client.LoginRequest{}, )
-		resp, err := c.GetAccountsaccountIdTransactions(ctx, "14", &pe.GetAccountsaccountIdTransactionsParams{}, auth)
-		if err != nil {
-			return err
+		{
+			respp, err:=pec.GetAccountsaccountIdTransactionsWithResponse(ctx, "14", &pe.GetAccountsaccountIdTransactionsParams{}, auth) 
+			if err != nil {
+				return err
+			}
+			// io.Copy(os.Stdout, resp.Body)
+			for _, t := range *respp.JSON200.Data.Transaction {
+				fmt.Println(t.Amount)
+			}
 		}
-		respp, err := pe.ParseGetAccountsaccountIdTransactionsResponse(resp)
-		if err != nil {
-			return err
+		{
+			respp, err := pc.CreatePaymentWithResponse(ctx, &payments.CreatePaymentParams{}, payments.PaymentRequest{}, auth)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("%v\n", respp.JSON201)
 		}
-		// io.Copy(os.Stdout, resp.Body)
-		for _, t := range *respp.JSON200.Data.Transaction {
-			fmt.Println(t.Amount)
-		}
+		// resp,err:=
 		// client.GetTransactionsAccountsAccountIdTransactionsGetResponse
 
 		return nil

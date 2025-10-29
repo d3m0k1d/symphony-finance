@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/d3m0k1d/symphony-finance/client-pilot/pe"
 	"log"
 	"net/http"
 	"os"
-	"vtb-apihack-2025/client-pilot/pe"
 )
 
 func main() {

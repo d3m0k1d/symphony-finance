@@ -1,0 +1,28 @@
+
+services:
+  nuts:
+    image: nutsfoundation/nuts-node:latest
+    environment:
+      NUTS_STRICTMODE: false
+      NUTS_URL: http://nuts
+      NUTS_HTTP_INTERNAL_ADDRESS: :8081
+      NUTS_AUTH_CONTRACTVALIDATORS: dummy
+      NUTS_AUTH_IRMA_AUTOUPDATESCHEMAS: false
+      NUTS_HTTPCLIENT_TIMEOUT: 60s
+    ports:
+      - 8080:8080
+      - 8081:8081
+    networks:
+      - symphony
+
+    volumes:
+      - nuts-data:/app/data
+      - nuts-config:/app/config
+
+volumes:
+  nuts-data:
+  nuts-config:
+
+networks:
+  symphony:
+    driver: bridge

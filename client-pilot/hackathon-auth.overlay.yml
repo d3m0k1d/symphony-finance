@@ -1,0 +1,115 @@
+overlay: 1.0.0
+info:
+  title: Fix missing schema for /auth/bank-token
+  version: 1.0.0
+actions:
+  - target: $["paths"]["/auth/bank-token"]["post"]["responses"]["200"]["content"]["application/json"]["schema"]
+    description: Add a proper schema for successful token response
+    update:
+      type: object
+      description: Response returned when a client obtains a bank-issued token.
+      required:
+        - access_token
+        - token_type
+        - client_id
+        - expires_in
+      properties:
+        access_token:
+          type: string
+          description: JWT access token signed by the bank (RS256).
+          example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          description: Token type (typically "bearer").
+          example: bearer
+        client_id:
+          type: string
+          description: The client_id that received the token (team id).
+          example: team200
+        expires_in:
+          type: integer
+          description: Lifetime of the token in seconds.
+          example: 86400
+        scope:
+          type: string
+          description: Optional scope string (if applicable).
+          example: accounts:read
+        issued_at:
+          type: string
+          format: date-time
+          description: Optional issuance timestamp.
+          example: "2025-10-30T12:34:56Z"
+
+  - target: $["paths"]["/account-consents/request"]["post"]["responses"]["200"]["content"]["application/json"]["schema"]
+    description: Add a proper schema for successful token response
+    update:
+      type: object
+      description: Information about the created consent request
+      required:
+        - consent_id
+        - status
+        - client_id
+        - permissions
+        - requesting_bank
+        - expires_at
+      properties:
+        consent_id:
+          type: string
+          description: Unique identifier of the consent request
+          example: cons-req-12345
+        status:
+          type: string
+          description: Current status of the consent
+          enum: [AwaitingAuthorisation, Authorised, Rejected, Expired]
+          example: AwaitingAuthorisation
+        client_id:
+          type: string
+          description: ID of the client in the target bank (the data owner)
+          example: cli-ab-001
+        permissions:
+          type: array
+          description: Permissions requested from the target bank
+          items:
+            type: string
+          example:
+            - ReadAccountsDetail
+            - ReadBalances
+            - ReadTransactionsDetail
+        reason:
+          type: string
+          description: Business justification for the consent
+          example: Мультибанковое приложение VBank
+        requesting_bank:
+          type: string
+          description: Technical identifier of the requesting bank
+          example: vbank
+        requesting_bank_name:
+          type: string
+          description: Human-readable name of the requesting bank
+          example: Victory Bank
+        expires_at:
+          type: string
+          x-go-type: "iso8601.Time"
+          x-go-type-import:
+            path: "vtb-apihack-2025/lib/time/iso8601"
+          format: date-time
+          description: Expiration date/time of the consent
+          example: "2026-01-01T00:00:00"
+        created_at:
+          type: string
+          x-go-type: "iso8601.Time"
+          x-go-type-import:
+            path: "vtb-apihack-2025/lib/time/iso8601"
+          format: date-time
+          description: Timestamp when the consent was created
+          example: "2025-10-30T12:34:56"
+        links:
+          type: object
+          description: URLs for follow-up actions
+          properties:
+            self:
+              type: string
+              example: https://abank.open.bankingapi.ru/account-consents/cons-req-12345
+            authorise:
+              type: string
+              example: https://abank.open.bankingapi.ru/consents/cons-req-12345/authorize

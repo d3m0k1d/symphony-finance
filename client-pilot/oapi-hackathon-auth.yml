@@ -1,0 +1,3 @@
+output-options:
+  overlay:
+    path: ./hackathon-auth.overlay.yml

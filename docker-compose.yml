@@ -4,8 +4,11 @@ services:
         ports:
             - 8089:8089
         env_file: .env
+        volumes:
+            - symphony_db:/var/symphony/
         environment:
             REDIS_ADDR: redis:6379
+            SQLITE_DSN: /var/symphony/db
         networks:
             - backend
     redis:
@@ -22,3 +25,4 @@ networks:
     backend:
 volumes:
     redis-data:
+    symphony_db:

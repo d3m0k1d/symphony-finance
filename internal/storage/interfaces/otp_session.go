@@ -9,4 +9,5 @@ type OTPSession struct {
 type OtpSessionStore interface {
 	StoreCode(ctx context.Context, session, email string, hash []byte) error
 	RetrieveCode(ctx context.Context, session string) (result OTPSession, err error)
+	DropCode(ctx context.Context, session string) (err error)
 }

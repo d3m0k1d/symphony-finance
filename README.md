@@ -1,38 +1,51 @@
 # symphony-finance
 
-# frontend repository
+Пускай ваши банки сольются в единую мелодию!
+
+# front end
 
 - https://github.com/nikitaLomeiko/vtb-api-hack_2025
 
-# layout
+# структура проекта
 
-we are doing our best to comply to [standard layout](https://github.com/golang-standards/project-layout)
+Мы стараемся придерживаться [стандартного макета проекта](https://github.com/golang-standards/project-layout)
 
-- `./internal/api/uberproxy/` -- the main HTTP API package allowing authorized users to do requests to upstream APIs
-- `./cmd/uberproxy/` -- executable uberproxy and composition root
-- `./migrations/` -- sqlite database migrations for [goose](https://github.com/pressly/goose)
-- `./client-pilot` -- [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen)-generated OpenBanking API Clients
-	- build: `go generate ./client-pilot/`
-- `./internal/client/` -- [hevaily WIP] API client optimized for ergonomics using generated clients.
-	- `./internal/client/hack` -- implementation of interface with respect to the quirks of sandbox banks: missing and extra fields, nonstandard consents and auth
-	- `./internal/client/gost` -- implementation strictly conforming to standards
-- `./internal/multibank/` -- a multibank client for performing data
-	aggregations over multiple banks. currently the only feature is combined
-	transactions list
-- `./internal/config/` -- configuration interface and providers backed by either environment variables or relational databases
-- `./internal/otp/` -- service handling OTPs flow
-- `./internal/mail/` -- email client for sending OTPs
-	- `impl` -- real smtp client
-	- `fake` -- mock logging codes, for development
-# roadmap
+- `/internal/api/uberproxy/` -- основной пакет HTTP API, позволяющий авторизованным пользователям выполнять запросы к upstream API банков от своего имени
+- `/cmd/uberproxy/` -- исполняемый uberproxy и composition root
+- `/migrations/` -- миграции SQLite для [goose](https://github.com/pressly/goose)
+	- `/default_banks.sql` -- скрипт для инициализации БД с 3 банками из песочницы
+- `/client-pilot` -- OpenBanking-клиенты API сгенерированные с помощью [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen)
+  - собрать: `go generate ./client-pilot/`
+- `/internal/client/` -- [в активной разработке] удобный API-клиент поверх клиентов сгенерированных из oas
+  - `/internal/client/hack` -- реализация клиента с учётом особенностей sandbox-банков: отсутствующие или дополнительные поля, нестандартные consent’ы и аутентификация
+  - `/internal/client/gost` -- реализация, строго соответствующая стандартам
+- `/internal/multibank/` -- мультибанковский клиент для агрегирования данных из нескольких банков. Сейчас единственная функция -- объединённый список транзакций
+- `/internal/config/` -- интерфейс конфигурации и провайдеры, основанные на переменных окружения или реляционных БД
+- `/internal/otp/` -- сервис отвечающий OTP
+- `/internal/mail/` -- почтовый клиент для отправки OTP
+  - `impl` -- реальный SMTP-клиент
+  - `fake` -- мок с логированием кодов для разработки
+- `do.sh` -- bash-скрипт для автоматизации процесса разработки.
 
-## nov. 9
+# дорожная карта
 
-- proxying requests enriched with authentication
-- combined transactions
-- replaceable authentication and consent modules
+## готово 9 ноября
 
-## future
+- проксирование запросов в upstream
+- получение сохранение соглашений на доступ
+- OTP auth
+- динамическая конфигурация, позволяющая в реальном времени подключать и отключать новые банки
+- статическая конфигурация переменными окружения для разработки
+- docker compose c бэкендом и redis
 
-- support cloud-native config providers such as etcd
-- gracefully handle combining different api versions
+## полуфинал
+
+- доработать объединённые транзакции
+- добавить другие фичи по кроссбанковому анализу данных
+- реализовать работу с разрешениями на платежи
+- добавить поддержку других провайдеров конфигурации, например, etcd
+- добавить фронтенд в docker compose
+
+## дальше
+
+- корректная работа с разными версиями OpenBanking API

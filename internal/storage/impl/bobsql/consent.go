@@ -13,12 +13,15 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func NewSqliteConsentStore(dsn string) (*consentStore, error) {
+func NewSqliteConsentStore(dsn string, bankId int64) (*consentStore, error) {
 	db, err := bob.Open("sqlite", dsn)
 	if err != nil {
 		return nil, err
 	}
-	return &consentStore{exe: db}, nil
+	return &consentStore{
+		exe:    db,
+		bankId: bankId,
+	}, nil
 }
 
 var _ interfaces.ConsentStore = &consentStore{}

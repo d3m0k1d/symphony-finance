@@ -28,7 +28,11 @@ func (m mailer) SendCode(ctx context.Context, rcpt string, code string) error {
 		return err
 	}
 	msg.Subject("Подтвердите вход в Symphony")
-	msg.SetBodyString(gomail.TypeTextPlain, fmt.Sprintf("Код подтверждения входа в symphony: %q\nНикому не говорите этот код!", code))
+	msg.SetBodyString(gomail.TypeTextPlain, fmt.Sprintf(`
+		============================= TOP SECRET ===========================
+		Код подтверждения входа в symphony: %q\nНикому не говорите этот код!
+		xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+		`, code))
 	cli, err := gomail.NewClient(m.addr,
 		gomail.WithSMTPAuth(gomail.SMTPAuthAutoDiscover), gomail.WithTLSPortPolicy(gomail.TLSMandatory),
 		gomail.WithUsername(m.username), gomail.WithPassword(m.password),

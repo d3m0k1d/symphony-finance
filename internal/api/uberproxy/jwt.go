@@ -1,12 +1,29 @@
 package uberproxy
 
 import (
+	"errors"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
+func (s server) withJwtUser(f func(w http.ResponseWriter, r *http.Request, uid string) error) func(w http.ResponseWriter, r *http.Request) error {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		toks, found := strings.CutPrefix(r.Header.Get("authorization"), "Bearer ")
+		if !found {
+			w.WriteHeader(http.StatusBadRequest)
+			return errors.New("authentication header is not a token bearer")
+		}
+		uid, err := s.parseJwt(toks)
+		if err != nil {
+			return err
+		}
+		return f(w, r, uid)
+	}
+}
 func (s server) parseJwt(j string) (uid string, err error) {
 	tok, err := jwt.ParseWithClaims(j, &jwt.RegisteredClaims{}, func(t *jwt.Token) (any, error) {
 		return s.jwtSecret, nil

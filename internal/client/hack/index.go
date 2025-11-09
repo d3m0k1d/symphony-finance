@@ -31,20 +31,20 @@ type ApiClient struct {
 
 	bankName, ApiUrl, consentReason string
 
-	providerBankID string
+	providerBankID int64
 	// TODO: hide
-	CS             interfaces.ConsentStore
-	authF          func(ctx context.Context, req *http.Request) error
-	authTimer      *time.Timer
+	CS        interfaces.ConsentStore
+	authF     func(ctx context.Context, req *http.Request) error
+	authTimer *time.Timer
 }
 
 // ProviderBankID implements client.Client.
-func (c *ApiClient) ProviderBankID() string {
-	log.Println(c.providerBankID) 
+func (c *ApiClient) ProviderBankID() int64 {
+	log.Println(c.providerBankID)
 	return c.providerBankID
 }
 
-func NewClient(apiUrl, bankId, bankName, providerBankID string, cs interfaces.ConsentStore, debug bool) (*ApiClient, error) {
+func NewClient(apiUrl, bankId, bankName string, providerBankID int64, cs interfaces.ConsentStore, debug bool) (*ApiClient, error) {
 	var err error
 	debugF := func(ctx context.Context, req *http.Request) error {
 		if debug {

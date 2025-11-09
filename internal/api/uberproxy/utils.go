@@ -14,11 +14,11 @@ func readJsonBody[T any](w http.ResponseWriter, r *http.Request) (v T, err error
 	return
 }
 func writeJsonBody(w http.ResponseWriter, v interface{}) (err error) {
+	w.Header().Add("content-type", "application/json")
 	err = json.NewEncoder(w).Encode(v)
 	if err != nil {
 		return
 	}
-	w.Header().Add("content-type", "application/json")
 	return
 }
 func wrapHandler(f func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {

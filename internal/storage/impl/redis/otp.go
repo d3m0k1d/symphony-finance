@@ -15,6 +15,8 @@ import (
 var _ interfaces.OtpSessionStore = otpCache{}
 
 type otpCache struct {
+	// TODO: prolly fuck this dumb abstraction, i want advanced redis features like hashes
+	// e.g. to store code and retry accounting together
 	c *marshaler.Marshaler
 }
 

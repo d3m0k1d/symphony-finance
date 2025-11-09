@@ -11,6 +11,8 @@ import (
 	"vtb-apihack-2025/internal/api/uberproxy"
 	"vtb-apihack-2025/internal/client/hack"
 	envc "vtb-apihack-2025/internal/config/env"
+	"vtb-apihack-2025/internal/mail"
+	"vtb-apihack-2025/internal/mail/fake"
 	email "vtb-apihack-2025/internal/mail/impl"
 	otp "vtb-apihack-2025/internal/otp/impl"
 	maps "vtb-apihack-2025/internal/storage/impl/map"
@@ -18,6 +20,8 @@ import (
 
 	"github.com/samber/lo"
 )
+
+const debug = true
 
 func main() {
 	if err := func() error {
@@ -64,7 +68,12 @@ func main() {
 		if bigerr != nil {
 			return bigerr
 		}
-		mailer, err := email.NewMailer(os.Getenv("SMTP_ADDR"), os.Getenv("SMTP_LOGIN"), os.Getenv("SMTP_PASSWORD"), os.Getenv("SENDER_MAIL"))
+		var mailer mail.Mailer
+		if debug {
+			mailer, err = fake.NewMailer()
+		} else {
+			mailer, err = email.NewMailer(os.Getenv("SMTP_ADDR"), os.Getenv("SMTP_LOGIN"), os.Getenv("SMTP_PASSWORD"), os.Getenv("SENDER_MAIL"))
+		}
 		if err != nil {
 			return err
 		}
@@ -78,8 +87,8 @@ func main() {
 			lo.FromEntries(lo.Map(apiclients, func(item *hack.ApiClient, _ int) lo.Entry[string, *hack.ApiClient] {
 				return lo.Entry[string, *hack.ApiClient]{item.ProviderBankID(), item}
 			})),
-			os.Getenv("CORS_ORIGIN"), otper, true,
-		).SetHandlers(http.DefaultServeMux) // TODO: config
+			os.Getenv("CORS_ORIGIN"), otper, debug,
+		).SetHandlers(http.DefaultServeMux) // TODO: env config
 		return http.ListenAndServe(":8089", nil)
 	}(); err != nil {
 		log.Println(err)

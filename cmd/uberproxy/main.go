@@ -51,8 +51,8 @@ func main() {
 		sv := uberproxy.NewServer(
 			"i needa get laid",
 			os.Getenv("CORS_ORIGIN"), otper, debug, users, cfg,
-			func() (interfaces.ConsentStore, error) {
-				return bobsql.NewSqliteConsentStore(dsn)
+			func(bankId int64) (interfaces.ConsentStore, error) {
+				return bobsql.NewSqliteConsentStore(dsn, bankId)
 			},
 		)
 		err = sv.RefreshBanks(ctx)

@@ -37,7 +37,7 @@ func (s server) RefreshBanks(ctx context.Context) error {
 			bigerr = errors.Join(bigerr, fmt.Errorf("error getting config for bank %q: %w", apiUrl, err))
 			continue
 		}
-		cs, err := s.makeConsentStore()
+		cs, err := s.makeConsentStore(bank.ID())
 		if err != nil {
 			return err
 		}

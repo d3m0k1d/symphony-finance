@@ -36,10 +36,10 @@ type server struct {
 	cfg config.Config
 
 	isdebug          bool
-	makeConsentStore func() (interfaces.ConsentStore, error)
+	makeConsentStore func(bankId int64) (interfaces.ConsentStore, error)
 }
 
-func NewServer(jwtSecret string, origin string, otp otp.OTPAuthenticator, isdebug bool, users interfaces.UserStore, cfg config.Config, makeConsentStore func() (interfaces.ConsentStore, error)) *server {
+func NewServer(jwtSecret string, origin string, otp otp.OTPAuthenticator, isdebug bool, users interfaces.UserStore, cfg config.Config, makeConsentStore func(bankId int64) (interfaces.ConsentStore, error)) *server {
 	s := &server{
 		jwtSecret:        []byte(jwtSecret),
 		jwtMethod:        jwt.SigningMethodHS256,

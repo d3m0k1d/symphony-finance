@@ -97,7 +97,12 @@ func (s server) SetHandlers(mux *http.ServeMux) {
 		if err != nil {
 			return err
 		}
-		return nil
+
+		return writeJsonBody(w, struct {
+			SessionID string `json:"session_id"`
+		}{
+			SessionID: ses,
+		})
 	}),
 	)
 	muxx.HandleFunc("POST /auth/complete", wrapHandler(func(w http.ResponseWriter, r *http.Request) error {

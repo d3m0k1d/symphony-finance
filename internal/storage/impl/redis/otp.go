@@ -1,0 +1,39 @@
+package redis
+
+import (
+	"context"
+	"time"
+	"vtb-apihack-2025/internal/storage/interfaces"
+
+	"github.com/eko/gocache/lib/v4/cache"
+	"github.com/eko/gocache/lib/v4/store"
+	redis_store "github.com/eko/gocache/store/redis/v4"
+	"github.com/redis/go-redis/v9"
+)
+
+var _ interfaces.OtpSessionStore = otpCache{}
+
+type otpCache struct {
+	c cache.CacheInterface[interfaces.OTPSession]
+}
+
+func NewOtpCache(addr string) (*otpCache, error) {
+	s := redis_store.NewRedis(redis.NewClient(&redis.Options{Addr: addr}), store.WithExpiration(10*time.Minute))
+	c := cache.New[interfaces.OTPSession](s)
+	return &otpCache{
+		c: c,
+	}, nil
+}
+
+// RetrieveCode implements interfaces.OtpSessionStore.
+func (c otpCache) RetrieveCode(ctx context.Context, session string) (hash interfaces.OTPSession, err error) {
+	return c.c.Get(ctx, session)
+}
+
+// StoreCode implements interfaces.OtpSessionStore.
+func (c otpCache) StoreCode(ctx context.Context, session, email string, hash []byte) error {
+	return c.c.Set(ctx, session, interfaces.OTPSession{
+		Hash:  hash,
+		Email: email,
+	})
+}

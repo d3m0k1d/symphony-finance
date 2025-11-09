@@ -3,12 +3,14 @@ package hack
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 	auth "vtb-apihack-2025/client-pilot/auth/hack"
 )
 
 // Authenticate implements client.Client.
-func (c Client) Authenticate(ctx context.Context, clientId string, clientSecret string) error {
+func (c *ApiClient) Authenticate(ctx context.Context, clientId string, clientSecret string) error {
 	resp, err := c.ac.CreateBankTokenAuthBankTokenPost(ctx, &auth.CreateBankTokenAuthBankTokenPostParams{
 		ClientId:     clientId,
 		ClientSecret: clientSecret,
@@ -23,9 +25,18 @@ func (c Client) Authenticate(ctx context.Context, clientId string, clientSecret 
 	if err != nil {
 		return err
 	}
+	c.AccessToken = aresp.JSON200.AccessToken
 	c.authF = func(ctx context.Context, req *http.Request) error {
-		req.Header.Add("Authorization", "Bearer "+aresp.JSON200.AccessToken)
+		req.Header.Add("Authorization", "Bearer "+c.AccessToken)
+		req.Header.Add("x-requesting-bank", c.BankId)
 		return nil
 	}
+	c.authTimer = time.AfterFunc(
+		time.Duration(aresp.JSON200.ExpiresIn)*time.Second,
+		func() {
+			if err := c.Authenticate(context.Background(), clientId, clientSecret); err != nil {
+				log.Println(err)
+			}
+		})
 	return nil
 }

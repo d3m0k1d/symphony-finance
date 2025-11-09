@@ -80,13 +80,13 @@ func (c Client) RequestConsents(ctx context.Context) error {
 		ClientId:           c.clientId,
 		Permissions:        lo.Map(perms, func(item pe.PermissionsType, _ int) string { return string(item) }),
 		Reason:             &c.api.consentReason,
-		RequestingBank:     &c.api.BankId,
+		RequestingBank:     &c.api.bankId,
 		RequestingBankName: &c.api.bankName,
 	}
 	resp, err := c.api.ac.RequestConsentAccountConsentsRequestPost(
 		ctx,
 		&auth.RequestConsentAccountConsentsRequestPostParams{
-			XRequestingBank: &c.api.BankId,
+			XRequestingBank: &c.api.bankId,
 		},
 		b,
 		c.api.authF,

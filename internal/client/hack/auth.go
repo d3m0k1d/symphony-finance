@@ -28,7 +28,7 @@ func (c *ApiClient) Authenticate(ctx context.Context, clientId string, clientSec
 	c.AccessToken = aresp.JSON200.AccessToken
 	c.authF = func(ctx context.Context, req *http.Request) error {
 		req.Header.Add("Authorization", "Bearer "+c.AccessToken)
-		req.Header.Add("x-requesting-bank", c.BankId)
+		req.Header.Add("x-requesting-bank", c.bankId)
 		return nil
 	}
 	c.authTimer = time.AfterFunc(

@@ -27,8 +27,7 @@ type ApiClient struct {
 	pec pe.ClientInterface
 	pc  payments.ClientInterface
 
-	// TODO: hide
-	BankId,
+	bankId,
 
 	bankName, ApiUrl, consentReason string
 
@@ -71,7 +70,7 @@ func NewClient(apiUrl, bankId, bankName, providerBankID string, cs interfaces.Co
 		lec:            lec,
 		pec:            pec,
 		pc:             pc,
-		BankId:         bankId,
+		bankId:         bankId,
 		bankName:       bankName,
 		ApiUrl:         apiUrl,
 		authF:          nil,

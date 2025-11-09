@@ -60,7 +60,7 @@ func (s server) SetHandlers(mux *http.ServeMux) {
 			resp{
 				Banks: lo.Map(lo.Values(s.apis), func(item *hack.ApiClient, _ int) bank {
 					return bank{
-						BankID: item.BankId,
+						BankID: item.ProviderBankID(),
 
 						// TODO
 						BankName:        "",
@@ -155,7 +155,7 @@ func (s server) SetHandlers(mux *http.ServeMux) {
 			return err
 		}
 		newreq.Header.Set("authorization", "Bearer "+s.apis[bankid].AccessToken)
-		newreq.Header.Set("x-requesting-bank", bank.BankId)
+		newreq.Header.Set("x-requesting-bank", bank.ProviderBankID())
 		newreq.Header.Set("x-consent-id", cons.ID) // secutity is someone else's problem now
 		if s.isdebug {
 			cmd, err := http2curl.GetCurlCommand(newreq)

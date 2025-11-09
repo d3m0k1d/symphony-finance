@@ -220,8 +220,12 @@ func (s server) SetHandlers(mux *http.ServeMux) {
 				if err != nil {
 					return err
 				}
+				myBankId, err := s.cfg.BankID(r.Context())
+				if err != nil {
+					return err
+				}
 				newreq.Header.Set("authorization", "Bearer "+s.apis[bankid].AccessToken)
-				newreq.Header.Set("x-requesting-bank", fmt.Sprint(bank.ProviderBankID()))
+				newreq.Header.Set("x-requesting-bank", myBankId)
 				newreq.Header.Set("x-consent-id", cons.ID) // secutity is someone else's problem now
 				if s.isdebug {
 					cmd, err := http2curl.GetCurlCommand(newreq)

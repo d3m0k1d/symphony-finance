@@ -102,7 +102,8 @@ func (c Client) RequestConsents(ctx context.Context) error {
 		return err
 	}
 	return c.api.CS.InsertConsent(ctx, c.clientId, perms, interfaces.Consent{
-		ID: respp.JSON200.ConsentId,
+		// TODO: they forgor to fill the expiry field, so for now i did it myself
+		ID: respp.JSON200.ConsentId, ExpiresAt: time.Now().Add(time.Hour * 24 * 365),
 	})
 }
 
